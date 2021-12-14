@@ -1,0 +1,18 @@
+micronaut:
+  application:
+    name: spring-context-lookup
+
+application:
+  configs:
+    app1:
+      jms:
+        topic-name: "VirtualTopic.${random.shortuuid}"
+        broker-url: "vm://local-1"
+    app2:
+      jms:
+        topic-name: "VirtualTopic.${random.shortuuid}"
+        broker-url: "vm://local-2"
+    app3:
+      jms:
+        topic-name: "VirtualTopic.${random.shortuuid}"
+        broker-url: "vm://local-3"
