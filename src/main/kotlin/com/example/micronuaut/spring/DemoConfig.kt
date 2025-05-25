@@ -23,5 +23,4 @@ class DemoConfig(
     override fun toString(): String {
         return "DemoConfig(serviceId='$serviceId', jms=$jms)"
     }
-
 }

@@ -11,28 +11,24 @@ import io.micronaut.gradle.MicronautTestRuntime.JUNIT_5
 plugins {
     kotlin("jvm")
     kotlin("kapt")
-    id("io.micronaut.application") version "3.0.2"
+    id("io.micronaut.minimal.application") version "4.5.3"
     id("org.jetbrains.kotlin.plugin.allopen")
-    id("org.jlleitschuh.gradle.ktlint") version "10.2.0"
 }
 
 group = "com.example.micronuaut.spring"
 
 val version: String by project
 val micronautVersion: String by project
-val artifactGroup = group
-val artifactVersion = version
 val targetJvmVersion: String by project
-
-fun getProperty(name: String): String? {
-    return if (project.properties[name] != null)
-        project.properties[name].toString()
-    else
-        System.getenv(name)
-}
 
 repositories {
     mavenCentral()
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(targetJvmVersion)
+    }
 }
 
 micronaut {
@@ -43,23 +39,6 @@ micronaut {
         incremental.set(true)
         annotations.add("com.example.micronuaut.spring.*")
     }
-}
-
-kotlin {
-    // Opens up the the required compiler packages to ensure KAPT works with JDK16
-    kotlinDaemonJvmArgs = listOf(
-        "-Dfile.encoding=UTF-8",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
-        "--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"
-    )
 }
 
 dependencies {
@@ -80,9 +59,8 @@ dependencies {
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
 
     implementation("io.micronaut:micronaut-inject")
-    implementation("io.micronaut:micronaut-validation")
-    implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-management")
+    implementation("io.micronaut:micronaut-jackson-databind")
 
     implementation("io.micronaut.spring:micronaut-spring-context")
 
@@ -94,6 +72,7 @@ dependencies {
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-parameter-names")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-blackbird")
+    runtimeOnly("org.yaml:snakeyaml")
 
     /**
      * Test dependency configurations.
@@ -111,32 +90,20 @@ application {
     mainClass.set("com.example.micronuaut.spring")
 }
 
-subprojects {
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-
-    // Optionally configure plugin
-    ktlint {
-        debug.set(true)
-    }
-}
-
 tasks {
     test {
         systemProperty("micronaut.environments", "test")
         systemProperty("micronaut.env.deduction", false)
-        dependsOn(ktlintCheck)
     }
 
     compileKotlin {
         kotlinOptions {
-            jvmTarget = targetJvmVersion
             javaParameters = true
         }
     }
 
     compileTestKotlin {
         kotlinOptions {
-            jvmTarget = targetJvmVersion
             javaParameters = true
         }
     }

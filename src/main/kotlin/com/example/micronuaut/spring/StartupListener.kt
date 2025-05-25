@@ -13,7 +13,7 @@ import jakarta.inject.Singleton
 @Singleton
 class StartupListener(
     private val micronautContext: ApplicationContext,
-    private val micronautSpringContext: MicronautApplicationContext
+    private val micronautSpringContext: MicronautApplicationContext,
 ) : ApplicationEventListener<StartupEvent> {
     companion object {
         val logger: Logger = LoggerFactory.getLogger(StartupListener::class.java)
